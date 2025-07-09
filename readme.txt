@@ -70,3 +70,4 @@ Edite o crontab do root (crontab -e) e adicione as linhas:
 - O script utiliza Instance Principal para autenticação na OCI.
 - Após associar o template ao host, force a execução da discovery para que os itens sejam criados.
 - Certifique-se de que o host no Zabbix tenha o mesmo nome configurado no script.
+- O script coleta apenas custos por recurso.
