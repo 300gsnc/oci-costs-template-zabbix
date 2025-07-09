@@ -41,17 +41,6 @@ EOF
 
   rm -f "$TMP"
 
-  # gera JSON LLD com cada serviço único
-#  echo "$RESP" \
-#    | jq -r '
-#       (.data.items // [])
-#       | map(.service)
-#       | unique
-#       | {data: map({"{#SERVICE}": .})}
-#      '
-#  exit 0
-#fi
-
 echo "$RESP" \
   | jq -r '
      (.data.items // [])
@@ -107,18 +96,6 @@ RESP=$(sudo oci raw-request \
 rm -f "$JSON_FILE"
 [ -z "$RESP" ] && { echo "Erro: sem resposta OCI CLI" >&2; exit 2; }
 
-# prepara batch para zabbix_sender
-#BATCH=$(mktemp)
-#echo "$RESP" \
-#  | jq -r '
-#      (.data.items // [])
-#      | group_by(.service)[]
-#      | "\([.[0].service, (map(.computedAmount //0)|add)] | @tsv)"
-#    ' \
-#  | while IFS=$'\t' read -r service total; do
-#      key="oci.costs[${service},${PERIOD}]"
-#      printf "%s\t%s\t%s\n" "$ZABBIX_HOST" "$key" "$total"
-#    done > "$BATCH"
 BATCH=$(mktemp)
 echo "$RESP" \
   | jq -r '
