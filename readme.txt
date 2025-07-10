@@ -1,50 +1,56 @@
-# oci-costs-template-zabbix
+oci-costs-template-zabbix
 
-  Integração de Custos da OCI com Zabbix – Template de Descoberta
+Integração de Custos da OCI com o Zabbix – Template de Descoberta
 
-1.  Importe o template 'oci_costs_template_zabbix.xml' no zabbix.
+1. Importar o Template
 
-2. Associar Template ao Host
-Associe o template ao host que irá executar o script costs_zabbix.sh.
+Importe o arquivo oci_costs_template_zabbix.xml na interface do Zabbix.
 
-Esse host será responsável por coletar os dados e enviá-los ao Zabbix via zabbix_sender.
+2. Associar o Template ao Host
+
+Associe o template ao host que executará o script costs_zabbix.sh.
+
+Esse host será responsável por coletar os dados de custo e enviá-los ao Zabbix via zabbix_sender.
 
 3. Preparar o Host Monitorado
-No host que está executando o zabbix-agent:
 
-Baixe e coloque o script costs_zabbix.sh em:
+No host onde o Zabbix Agent está em execução:
 
-/etc/zabbix/scripts/
+Baixe e coloque o script costs_zabbix.sh no diretório:
 
-Edite o script e:
+  /etc/zabbix/scripts/
 
-- Configure o OCID do Tenancy
-- Ajuste o IP do Zabbix Server
-- Defina o nome do Host Zabbix
+Edite o script e configure:
 
-No arquivo /etc/zabbix/zabbix_agentd.conf, adicione a seguinte linha ao final do arquivo:
+  - O OCID do Tenancy
+  - O IP do Zabbix Server
+  - O nome do host conforme cadastrado no Zabbix
+
+No arquivo /etc/zabbix/zabbix_agentd.conf, adicione ao final:
 
   UserParameter=oci.discovery,/etc/zabbix/scripts/costs_zabbix.sh --discover
 
-4. Reiniciar o Agente Zabbix
+4. Reiniciar o Zabbix Agent
+Execute:
 
   systemctl restart zabbix-agent
 
 5. Agendar Execução Diária via Crontab
+Edite o crontab do root com:
 
-Edite o crontab do root (crontab -e) e adicione as linhas:
+  crontab -e
 
-  1  0 * * * root /etc/zabbix/scripts/costs_zabbix.sh 1d
-  2 0 * * * root /etc/zabbix/scripts/costs_zabbix.sh 7d
-  3 0 * * * root /etc/zabbix/scripts/costs_zabbix.sh 30d
+  1  0 * * * /etc/zabbix/scripts/costs_zabbix.sh 1d
+  2  0 * * * /etc/zabbix/scripts/costs_zabbix.sh 7d
+  3  0 * * * /etc/zabbix/scripts/costs_zabbix.sh 30d
 
-📝 Observações Importantes
+📝 Observações
+  -  O script utiliza Instance Principal para autenticação na OCI. É necessário configurar a policy no tenancy para permitir o uso do serviço cost-usage.
+  - Após associar o template ao host, force a execução da discovery para que os itens sejam criados automaticamente.
+  - Certifique-se de que o nome do host no Zabbix seja exatamente o mesmo definido no script.
+  - O script coleta apenas custos por serviço (recurso).
+  - A descoberta dos serviços é feita automaticamente via script. No entanto, os cálculos de custos totais (1d, 7d, 30d) são estáticos com base nos recursos descobertos na primeira execução. Caso novos serviços sejam identificados no futuro, será necessário ajustar manualmente os itens de cálculo no template, como por exemplo:
 
-- O script utiliza Instance Principal para autenticação na OCI, configurar policy no tanancy para permitir 'cost-usage'.
-- Após associar o template ao host, force a execução da discovery para que os itens sejam criados.
-- Certifique-se de que o host no Zabbix tenha o mesmo nome configurado no script.
-- O script coleta apenas custos por recurso.
-- No template o discovery do custo por recurso e descoberto de forma automatizada. Os cálculos configurados, estão estaticos de acordo com o recurso que foi encontrado, em casos especificos algum recurso pode não ser descoberto, como es uma requisição que obtem a resposta da api da oci o calculo fica de forma estatica, então caso algum recurso descoberto naõ esteja no calculo do template atual, precisa ajustar de forma manual no zabbix direto no template para que o calculo fique correto. Vale para os items
-  - Total Costs 1d
-  - Total Costs 7d
-  - Total Costs 30d
+  Total Costs 1d
+  Total Costs 7d
+  Total Costs 30d
