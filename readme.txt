@@ -9,7 +9,7 @@ Associe o template ao host que irá executar o script costs_zabbix.sh.
 
 Esse host será responsável por coletar os dados e enviá-los ao Zabbix via zabbix_sender.
 
-4. Preparar o Host Monitorado
+3. Preparar o Host Monitorado
 No host que está executando o zabbix-agent:
 
 Baixe e coloque o script costs_zabbix.sh em:
@@ -26,11 +26,11 @@ No arquivo /etc/zabbix/zabbix_agentd.conf, adicione a seguinte linha ao final do
 
   UserParameter=oci.discovery,/etc/zabbix/scripts/costs_zabbix.sh --discover
 
-5. Reiniciar o Agente Zabbix
+4. Reiniciar o Agente Zabbix
 
   systemctl restart zabbix-agent
 
-6. Agendar Execução Diária via Crontab
+5. Agendar Execução Diária via Crontab
 
 Edite o crontab do root (crontab -e) e adicione as linhas:
 
