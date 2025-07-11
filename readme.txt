@@ -4,7 +4,7 @@ Integração de Custos da OCI com o Zabbix – Template de Descoberta
 
 1. Importar o Template
 
-Importe o arquivo oci_costs_template_zabbix.xml na interface do Zabbix.
+Importe o arquivo 'zbx_export_templates.yaml' na interface do Zabbix.
 
 2. Associar o Template ao Host
 
