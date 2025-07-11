@@ -45,7 +45,7 @@ Edite o crontab do root com:
   3  0 * * * /etc/zabbix/scripts/costs_zabbix.sh 30d
 
 📝 Observações
-  -  O script utiliza Instance Principal para autenticação na OCI. É necessário configurar a policy no tenancy para permitir o uso do serviço cost-usage.
+  -  O script utiliza Instance Principal para autenticação na OCI. É necessário configurar a policy no tenancy para permitir o uso do serviço usage-report.
   - Após associar o template ao host, force a execução da discovery para que os itens sejam criados automaticamente.
   - Certifique-se de que o nome do host no Zabbix seja exatamente o mesmo definido no script.
   - O script coleta apenas custos por serviço (recurso).
