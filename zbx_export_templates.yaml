@@ -1,0 +1,66 @@
+zabbix_export:
+  version: '7.2'
+  template_groups:
+    - uuid: c2c162144c2d4c5491c8801193af4945
+      name: Templates/Cloud
+  templates:
+    - uuid: 837f9018af5844bdaf3875b15dc6e91d
+      template: 'OCI Costs'
+      name: 'OCI Costs'
+      groups:
+        - name: Templates/Cloud
+      items:
+        - uuid: 7e30ecac133346a395324bea653cabc7
+          name: 'Total Costs 1d'
+          type: CALCULATED
+          key: oci.costs.1d.calc
+          delay: 1h
+          value_type: FLOAT
+          units: R$
+          params: 'last(//oci.costs[Block_Storage.1d]) + last(//oci.costs[Compute.1d]) +last(//oci.costs[Load_Balancer.1d]) + last(//oci.costs[Logging.1d]) + last(//oci.costs[Object_Storage.1d]) + last(//oci.costs[Oracle_Web_Application_Firewall_(WAF).1d]) + last(//oci.costs[Telemetry.1d]) + last(//oci.costs[Virtual_Cloud_Network.1d])'
+        - uuid: cf03c197156445ceb52b326516a3f979
+          name: 'Total Costs 7d'
+          type: CALCULATED
+          key: oci.costs.7d.calc
+          delay: 1h
+          value_type: FLOAT
+          units: R$
+          params: 'last(//oci.costs[Block_Storage.7d]) + last(//oci.costs[Compute.7d]) +last(//oci.costs[Load_Balancer.7d]) + last(//oci.costs[Logging.7d]) + last(//oci.costs[Object_Storage.7d]) + last(//oci.costs[Oracle_Web_Application_Firewall_(WAF).7d]) + last(//oci.costs[Telemetry.7d]) + last(//oci.costs[Virtual_Cloud_Network.7d])'
+        - uuid: c83533c850804b80b021b260ed940fdd
+          name: 'Total Costs 30d'
+          type: CALCULATED
+          key: oci.costs.30d.calc
+          delay: 1h
+          value_type: FLOAT
+          units: R$
+          params: 'last(//oci.costs[Block_Storage.30d]) + last(//oci.costs[Compute.30d]) +last(//oci.costs[Load_Balancer.30d]) + last(//oci.costs[Logging.30d]) + last(//oci.costs[Object_Storage.30d]) + last(//oci.costs[Oracle_Web_Application_Firewall_(WAF).30d]) + last(//oci.costs[Telemetry.30d]) + last(//oci.costs[Virtual_Cloud_Network.30d])'
+        - uuid: 27a7a9804fed4338b84b4adf99b5b91d
+          name: 'Estimated Costs'
+          type: CALCULATED
+          key: oci.costs.estimated.calc
+          delay: 1h
+          params: '31*((last(//oci.costs.1d.calc)+last(//oci.costs.7d.calc)+last(//oci.costs.30d.calc))/38)'
+      discovery_rules:
+        - uuid: 0e9ce2ca43854e0ea86eff9f6c27ad73
+          name: 'OCI Services Discovery'
+          key: oci.discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: 1ebde7adcc834b0795c3c7f0e6d5beb1
+              name: 'OCI Cost 1d – {#SERVICE}'
+              type: TRAP
+              key: 'oci.costs[{#SERVICE}.1d]'
+              value_type: FLOAT
+              units: R$
+            - uuid: ef8dad232ade4745b6b52360e9f6badc
+              name: 'OCI Cost 7d – {#SERVICE}'
+              type: TRAP
+              key: 'oci.costs[{#SERVICE}.7d]'
+              value_type: FLOAT
+              units: R$
+            - uuid: e44a66dcc640494494825dc8cb32ae89
+              name: 'OCI Cost 30d – {#SERVICE}'
+              type: TRAP
+              key: 'oci.costs[{#SERVICE}.30d]'
+              value_type: FLOAT
+              units: R$
