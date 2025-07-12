@@ -40,19 +40,21 @@ Edite o crontab do root com:
 
   crontab -e
 
-  1  0 * * * /etc/zabbix/scripts/costs_zabbix.sh 1d
-  2  0 * * * /etc/zabbix/scripts/costs_zabbix.sh 7d
-  3  0 * * * /etc/zabbix/scripts/costs_zabbix.sh 30d
+  1  12 * * * /etc/zabbix/scripts/costs_zabbix.sh 1d
+  2  12 * * * /etc/zabbix/scripts/costs_zabbix.sh 7d
+  3  12 * * * /etc/zabbix/scripts/costs_zabbix.sh 30d
 
 📝 Observações
   -  Valide se o usuario possui permissão para executar o script 'sudo -u zabbix /etc/zabbix/scripts/costs_oci.sh --discover'.
   -  O script utiliza Instance Principal para autenticação na OCI. É necessário configurar a policy no tenancy para permitir o uso do serviço 'usage-report'.
   - Após associar o template ao host, force a execução da discovery para que os itens sejam criados automaticamente.
   - Certifique-se de que o nome do host no Zabbix seja exatamente o mesmo definido no script.
-  - O script coleta apenas custos por serviço (recurso).
+  - O script coleta apenas custos por serviço.
   - A descoberta dos serviços é feita automaticamente via script. No entanto, os cálculos de custos totais (1d, 7d, 30d) são estáticos com base nos recursos descobertos na primeira execução. Caso novos serviços sejam identificados no futuro, será necessário ajustar manualmente os itens de cálculo no template, como por exemplo:
-
   Total Costs 1d
   Total Costs 7d
   Total Costs 30d
+  - Configuração e 'time period' utilizada nos gráficos:
+  From: now-1d/d+12h
+  To: now/d+12h
 
