@@ -33,7 +33,7 @@ zabbix_export:
           type: CALCULATED
           key: oci.costs.estimated.calc
           value_type: FLOAT
-          params: '31*((last(//oci.costs.1d.calc)+last(//oci.costs.7d.calc)+last(//oci.costs.30d.calc))/38)'
+          params: '(31*((last(//oci.costs.1d.calc)+last(//oci.costs.7d.calc)+last(//oci.costs.30d.calc))/38))*1.3'
       discovery_rules:
         - uuid: 0e9ce2ca43854e0ea86eff9f6c27ad73
           name: 'OCI Services Discovery'
