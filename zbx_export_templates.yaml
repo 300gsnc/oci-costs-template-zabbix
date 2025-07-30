@@ -1,0 +1,139 @@
+zabbix_export:
+  version: '7.2'
+  template_groups:
+    - uuid: c2c162144c2d4c5491c8801193af4945
+      name: Templates/Cloud
+  templates:
+    - uuid: 837f9018af5844bdaf3875b15dc6e91d
+      template: 'OCI Costs'
+      name: 'OCI Costs'
+      groups:
+        - name: Templates/Cloud
+      items:
+        - uuid: 7e30ecac133346a395324bea653cabc7
+          name: 'Total Costs 1d'
+          type: CALCULATED
+          key: oci.costs.1d.calc
+          value_type: FLOAT
+          params: 'round(last(//oci.costs[Block_Storage.1d]) + last(//oci.costs[Compute.1d]) + last(//oci.costs[Object_Storage.1d]) + last(//oci.costs[Streaming.1d]) + last(//oci.costs[Telemetry.1d]) + last(//oci.costs[Virtual_Cloud_Network.1d]), 2)'
+          tags:
+            - tag: oci
+              value: costs
+        - uuid: cf03c197156445ceb52b326516a3f979
+          name: 'Total Costs 7d'
+          type: CALCULATED
+          key: oci.costs.7d.calc
+          value_type: FLOAT
+          params: 'round(last(//oci.costs[Block_Storage.7d]) + last(//oci.costs[Compute.7d]) + last(//oci.costs[Object_Storage.7d]) + last(//oci.costs[Streaming.7d]) + last(//oci.costs[Telemetry.7d]) + last(//oci.costs[Virtual_Cloud_Network.7d]), 2)'
+          tags:
+            - tag: oci
+              value: costs
+        - uuid: c83533c850804b80b021b260ed940fdd
+          name: 'Total Costs 30d'
+          type: CALCULATED
+          key: oci.costs.30d.calc
+          value_type: FLOAT
+          params: 'round(last(//oci.costs[Block_Storage.30d]) + last(//oci.costs[Compute.30d]) + last(//oci.costs[Object_Storage.30d]) + last(//oci.costs[Streaming.30d]) + last(//oci.costs[Telemetry.30d]) + last(//oci.costs[Virtual_Cloud_Network.30d]), 2)'
+          tags:
+            - tag: oci
+              value: costs
+        - uuid: 09d3faa85d674f379d921b89f0c147ed
+          name: 'Budget Month R$'
+          type: CALCULATED
+          key: oci.costs.budget
+          value_type: FLOAT
+          params: '4000.00'
+          tags:
+            - tag: oci
+              value: costs
+        - uuid: 0f4ce92f572a42e7874de681a1a64c15
+          name: 'Budget Used  %'
+          type: CALCULATED
+          key: oci.costs.budget.used
+          params: 'round((last(//oci.costs.estimated.calc)/last(//oci.costs.budget)) * 100, 2)'
+          tags:
+            - tag: oci
+              value: costs
+        - uuid: 27a7a9804fed4338b84b4adf99b5b91d
+          name: 'Estimated Costs R$'
+          type: CALCULATED
+          key: oci.costs.estimated.calc
+          value_type: FLOAT
+          params: 'round((31*((last(//oci.costs.1d.calc)+last(//oci.costs.7d.calc)+last(//oci.costs.30d.calc))/38)) * 1.18, 2)'
+          tags:
+            - tag: oci
+              value: costs
+        - uuid: 92214df6d211468ab5e3a5a369860594
+          name: 'Estimated Costs $'
+          type: CALCULATED
+          key: oci.costs.estimated.calc.dol
+          value_type: FLOAT
+          params: 'round(((31*((last(//oci.costs.1d.calc)+last(//oci.costs.7d.calc)+last(//oci.costs.30d.calc))/38)) * 1.18) / 5.57, 2)'
+          tags:
+            - tag: oci
+              value: costs
+      discovery_rules:
+        - uuid: 0e9ce2ca43854e0ea86eff9f6c27ad73
+          name: 'OCI Services Discovery'
+          key: oci.discovery
+          delay: 1h
+          item_prototypes:
+            - uuid: 2fe45056175e45b28b1c61ba70d86b25
+              name: '% OCI Cost 1d – {#SERVICE}'
+              type: CALCULATED
+              key: 'oci.costs.percent.[{#SERVICE}.1d]'
+              value_type: FLOAT
+              units: '%'
+              params: 'round(last(//oci.costs[{#SERVICE}.1d]) / last(//oci.costs.1d.calc) * 100, 2)'
+              tags:
+                - tag: oci
+                  value: costs
+            - uuid: 1ebde7adcc834b0795c3c7f0e6d5beb1
+              name: 'OCI Cost 1d – {#SERVICE}'
+              type: TRAP
+              key: 'oci.costs[{#SERVICE}.1d]'
+              value_type: FLOAT
+              tags:
+                - tag: oci
+                  value: costs
+            - uuid: ef8dad232ade4745b6b52360e9f6badc
+              name: 'OCI Cost 7d – {#SERVICE}'
+              type: TRAP
+              key: 'oci.costs[{#SERVICE}.7d]'
+              value_type: FLOAT
+              tags:
+                - tag: oci
+                  value: costs
+            - uuid: e44a66dcc640494494825dc8cb32ae89
+              name: 'OCI Cost 30d – {#SERVICE}'
+              type: TRAP
+              key: 'oci.costs[{#SERVICE}.30d]'
+              value_type: FLOAT
+              tags:
+                - tag: oci
+                  value: costs
+      tags:
+        - tag: oci
+          value: costs
+  triggers:
+    - uuid: 9faae2be82274dae86caafbf2e649282
+      expression: 'last(/OCI Costs/oci.costs.budget) < last(/OCI Costs/oci.costs.estimated.calc)'
+      name: 'Budget < Estimated Costs'
+      priority: WARNING
+      tags:
+        - tag: oci
+          value: costs
+    - uuid: 433444107a884cd69a6d21c60a567b13
+      expression: '(last(/OCI Costs/oci.costs.budget)* 2) < last(/OCI Costs/oci.costs.estimated.calc)'
+      name: 'Budget < Estimated Costs x2'
+      priority: HIGH
+      tags:
+        - tag: oci
+          value: costs
+    - uuid: ca948e09e03d4bbda0faaafe0afe5ee6
+      expression: 'last(/OCI Costs/oci.costs.budget) > last(/OCI Costs/oci.costs.estimated.calc)'
+      name: 'Budget > Estimated Costs'
+      priority: INFO
+      tags:
+        - tag: oci
+          value: costs
