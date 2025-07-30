@@ -40,9 +40,9 @@ Edite o crontab do root com:
 
   crontab -e
 
-  1  12 * * * /etc/zabbix/scripts/costs_zabbix.sh 1d
-  2  12 * * * /etc/zabbix/scripts/costs_zabbix.sh 7d
-  3  12 * * * /etc/zabbix/scripts/costs_zabbix.sh 30d
+  0 12 * * * root /etc/zabbix/scripts/costs_zabbix.sh 1d
+  0 12 * * 1 root /etc/zabbix/scripts/costs_zabbix.sh 7d
+  0 12 1 * * root /etc/zabbix/scripts/costs_zabbix.sh 30d
 
 📝 Observações
   -  Valide se o usuario possui permissão para executar o script 'sudo -u zabbix /etc/zabbix/scripts/costs_oci.sh --discover'.
@@ -55,12 +55,12 @@ Edite o crontab do root com:
   Total Costs 7d
   Total Costs 30d
   - Configuração e 'time period' utilizada nos gráficos:
-  #1D
+    #1D
   From: now-7d
   To: now
 
-  #30D
-  From: now-30d
+    #365D
+  From: now-365d
   To: now
   - Ajustar o item budget de acordo com seu budget atual.
   - Incluído conversão 'estática' do valor estimado para dólar.
